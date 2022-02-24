@@ -13,5 +13,5 @@ public class Project {
     private int nRoles;
     private List<Skill> requiredSkills;
 
-    private List<Contributor> assignedContributors;
+    private List<String> assignedContributors;
 }
