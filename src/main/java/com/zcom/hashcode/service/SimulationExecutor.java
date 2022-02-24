@@ -27,7 +27,7 @@ public class SimulationExecutor {
 	}
 
 	public void resolve() {
-		Comparator<Project> comparator = Comparator.comparing(Project::getEffortRatio,(d1, d2) -> { return d2.compareTo(d1);});
+		Comparator<Project> comparator = Comparator.comparing(Project::getEffort,(d1, d2) -> { return d2.compareTo(d1);});
 //		Comparator<Project> comparator = Comparator.comparing(Project::getDeadline,(d1, d2) -> { return d2.compareTo(d1);});
 
 		output.setProjects(parsedContent.getProjects().stream()
