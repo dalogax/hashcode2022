@@ -13,7 +13,7 @@ import com.zcom.hashcode.service.SimulationExecutor;
 public class Main {
 
 	public static void main(String[] args) throws URISyntaxException {
-		List<String> filesToProcess = Arrays.asList("a", "b", "c", "d", "e", "f");
+		List<String> filesToProcess = Arrays.asList("a");//, "b", "c", "d", "e", "f");
 		filesToProcess.forEach(Main::processFile);
 	}
 	
@@ -23,8 +23,9 @@ public class Main {
 		final ParsedContent parsedContent = new FileReader()
 				.parseInputFile(new File(inputResourceName));
 		
-		new SimulationExecutor(parsedContent).resolve();
-		new HashCodeFileWriter().writeToOutputFile(parsedContent.getIntersections(), outputFileName);
+		SimulationExecutor executor = new SimulationExecutor(parsedContent);
+		executor.resolve();
+		new HashCodeFileWriter().writeToOutputFile(executor.getOutput(), outputFileName);
 	}
 	
 }

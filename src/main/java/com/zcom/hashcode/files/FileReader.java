@@ -3,66 +3,56 @@ package com.zcom.hashcode.files;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Scanner;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.Set;
 
-import com.zcom.hashcode.domain.Car;
-import com.zcom.hashcode.domain.Intersection;
+import com.zcom.hashcode.domain.Contributor;
 import com.zcom.hashcode.domain.ParsedContent;
-import com.zcom.hashcode.domain.Street;
+import com.zcom.hashcode.domain.Project;
+import com.zcom.hashcode.domain.Skill;
+
 
 public class FileReader {
 
 	public ParsedContent parseInputFile(File f) {
 		try {
-			final List<Car> cars = new ArrayList<>();
+			final Set<Contributor> contributors = new HashSet<Contributor>();
+
+			final Set<Project> projects = new HashSet<Project>();
 			
-			final Map<String, Street> streetsByName = new HashMap<>();
 			final Scanner sc = new Scanner(f);
-			final int duration = sc.nextInt();
-			final int numberOfIntersections = sc.nextInt();
-			final int numberOfStreets = sc.nextInt();
-			final int numberOfCars = sc.nextInt();
-			final int bonusPoints = sc.nextInt();
+			final int numContributors = sc.nextInt();
+			final int numProjects = sc.nextInt();
+		
 			
-			final List<Intersection> intersections = IntStream.range(0, numberOfIntersections)
-					.mapToObj(Intersection::new)
-					.collect(Collectors.toList());
-			
-			for(int id=0; id<numberOfStreets; id++) {
-				final int startIntersection = sc.nextInt();
-				final int endIntersection = sc.nextInt();
-				final String name = sc.next();
-				intersections.get(startIntersection).getOutputStreets().add(name);
-				intersections.get(endIntersection).getInputStreets().add(name);
-				final int streetDuration = sc.nextInt();
-				streetsByName.put(
-						name,
-						new Street(
-							startIntersection,
-							endIntersection,
-							name,
-							streetDuration));
+			for(int c=0; c<numContributors; c++) {
+				Contributor contributor = new Contributor();
+				contributor.setName(sc.next());
+				final int numSkills = sc.nextInt();
+				contributor.setSkills(new HashSet<Skill>(numSkills));
+				for(int s=0; s<numSkills; s++) {
+					contributor.getSkills().add(new Skill(sc.next(), sc.nextInt()));
+				}
+				contributors.add(contributor);
 			}
 			
-			for(int id=0; id<numberOfCars; id++) {
-				final int numberOfStreetsToTravel = sc.nextInt();
-				final List<String> streetNames = new ArrayList<>(1);
-				for(int j=0; j<numberOfStreetsToTravel; j++) {
-					final String streetName = sc.next();
-					if (j != numberOfStreetsToTravel-1) {
-						streetsByName.get(streetName).getNumberOfPassingCars().incrementAndGet();
-					}
-					streetNames.add(streetName);
+			for(int p=0; p<numProjects; p++) {
+				Project project = new Project();
+				project.setName(sc.next());
+				project.setEffort(sc.nextInt());
+				project.setScore(sc.nextInt());
+				project.setDeadline(sc.nextInt());
+				project.setNRoles(sc.nextInt());
+				project.setRequiredSkills(new ArrayList<Skill>(project.getNRoles()));
+
+				for(int r=0; r<project.getNRoles(); r++) {
+					project.getRequiredSkills().add(new Skill(sc.next(), sc.nextInt()));
 				}
-				cars.add(new Car(streetNames));
+				projects.add(project);
 			}
 			sc.close();
-			return new ParsedContent(duration, intersections, streetsByName, cars, bonusPoints);
+			return new ParsedContent(numContributors, numProjects, contributors, projects);
 		} catch (FileNotFoundException e) {
 			// ignore
 			throw new RuntimeException(e);
