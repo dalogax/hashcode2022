@@ -2,6 +2,8 @@ package com.zcom.hashcode.service;
 
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 import javax.sound.sampled.SourceDataLine;
 
@@ -22,12 +24,24 @@ public class SimulationExecutor {
 	public SimulationExecutor(ParsedContent p) {
 		super();
 		this.parsedContent = p;
+		this.output = new OutputContent();
 	}
 
 	public void resolve() {
 
-		System.out.println(parsedContent);
-		
+		Comparator<Project> comparator = Comparator.comparing(Project::getDeadline,(d1, d2) -> { return d2.compareTo(d1);});
+
+		output.setProjects(parsedContent.getProjects().stream()
+			.sorted(comparator)
+			.map(p -> {
+				p.setAssignedContributors(parsedContent.getContributors()
+					.stream()
+					.map( c -> c.getName())
+					.collect(Collectors.toList()));
+				return p;
+				})
+			.collect(Collectors.toList()));
+
 		output = new OutputContent();
 		output.setProjects(new ArrayList<Project>());
 	}
