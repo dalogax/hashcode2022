@@ -16,7 +16,7 @@ public class HashCodeFileWriter {
 			for (Project p : output.getProjects()) {
 				fw.write(String.valueOf(p.getName()));
 				fw.write("\n");
-				String.join(" ", p.getAssignedContributors());
+				fw.write(String.join(" ", p.getAssignedContributors()));
 				fw.write("\n");
 			}
 			

@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.sound.sampled.SourceDataLine;
 
+
+import com.zcom.hashcode.domain.Contributor;
 import com.zcom.hashcode.domain.OutputContent;
 import com.zcom.hashcode.domain.ParsedContent;
 import com.zcom.hashcode.domain.Project;
@@ -31,19 +33,28 @@ public class SimulationExecutor {
 
 		Comparator<Project> comparator = Comparator.comparing(Project::getDeadline,(d1, d2) -> { return d2.compareTo(d1);});
 
+
+
 		output.setProjects(parsedContent.getProjects().stream()
 			.sorted(comparator)
 			.map(p -> {
 				p.setAssignedContributors(parsedContent.getContributors()
 					.stream()
+					.limit(p.getNRoles())
 					.map( c -> c.getName())
 					.collect(Collectors.toList()));
 				return p;
 				})
 			.collect(Collectors.toList()));
 
-		output = new OutputContent();
-		output.setProjects(new ArrayList<Project>());
+	}
+
+
+	private Multimap<String,Contributor> indexSkills(ParsedContent content){
+		Multimap<String,Contributor> index = new ArrayListMultimap<String,Contributor>.create();
+
+
+
 	}
 
 }
