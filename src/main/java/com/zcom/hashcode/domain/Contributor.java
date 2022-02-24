@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class Contributor {
     private String name;
     private Set<Skill> skills;
+    private int busyUntil;
 }
