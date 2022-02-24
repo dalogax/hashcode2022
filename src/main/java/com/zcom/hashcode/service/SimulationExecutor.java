@@ -50,13 +50,18 @@ public class SimulationExecutor {
 		return skillIndex.get(skill.getName()).stream()
 				.filter(c -> !cs.contains(c.getName()))
 				.filter(c -> hasSkillContributor(c, skill))
+				.sorted(Comparator.comparing(c -> getSkillLevel(c, skill)))
 				.findFirst();
 	}
 
-	private boolean hasSkillContributor(Contributor c, Skill k) {
+	private int getSkillLevel(Contributor c, Skill k) {
 		return c.getSkills().stream()
 				.filter(kk -> kk.getName().equals(k.getName())).findFirst()
-				.get().getLevel() >= k.getLevel();
+				.get().getLevel();
+	}
+
+	private boolean hasSkillContributor(Contributor c, Skill k) {
+		return getSkillLevel(c, k) >= k.getLevel();
 	}
 
 //	private Contributor findContributor(Skill skill, Project p) {
