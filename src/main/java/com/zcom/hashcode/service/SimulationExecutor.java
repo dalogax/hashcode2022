@@ -37,7 +37,15 @@ public class SimulationExecutor {
 				for (Skill rs : p.getRequiredSkills()) {
 					Optional<Contributor> c = findContributor(rs, p, cs);
 
-					c.ifPresent(contributor -> cs.add(contributor.getName()));
+
+					c.ifPresent(cont -> {
+						Skill s = getSkill(cont, rs);
+
+						if (s.getLevel() == rs.getLevel())
+							s.setLevel(s.getLevel() + 1);
+
+						cs.add(cont.getName());
+					});
 				}
 
 				p.setAssignedContributors(new ArrayList<>(cs));
@@ -54,10 +62,13 @@ public class SimulationExecutor {
 				.findFirst();
 	}
 
-	private int getSkillLevel(Contributor c, Skill k) {
+	private Skill getSkill(Contributor c, Skill k) {
 		return c.getSkills().stream()
-				.filter(kk -> kk.getName().equals(k.getName())).findFirst()
-				.get().getLevel();
+				.filter(kk -> kk.getName().equals(k.getName())).findFirst().get();
+	}
+
+	private int getSkillLevel(Contributor c, Skill k) {
+		return getSkill(c, k).getLevel();
 	}
 
 	private boolean hasSkillContributor(Contributor c, Skill k) {
