@@ -1,5 +1,6 @@
 package com.zcom.hashcode.service;
 
+import java.sql.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -31,7 +32,7 @@ public class SimulationExecutor {
 		output.setProjects(parsedContent.getProjects().stream()
 			.sorted(comparator)
 			.peek(p -> {
-				Set<String> cs = new HashSet<>();
+				List<String> cs = new ArrayList<>();
 
 				for (Skill rs : p.getRequiredSkills()) {
 					Optional<Contributor> c = findContributor(rs, p, cs);
@@ -45,7 +46,7 @@ public class SimulationExecutor {
 			.collect(Collectors.toList()));
 	}
 
-	private Optional<Contributor> findContributor(Skill skill, Project p, Set<String> cs) {
+	private Optional<Contributor> findContributor(Skill skill, Project p, List<String> cs) {
 		return skillIndex.get(skill.getName()).stream()
 				.filter(c -> !cs.contains(c.getName()))
 				.filter(c -> hasSkillContributor(c, skill))
