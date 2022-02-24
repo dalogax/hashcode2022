@@ -27,30 +27,34 @@ public class SimulationExecutor {
 	}
 
 	public void resolve() {
+//		Comparator<Project> comparator = Comparator.comparing(Project::getEffortRatio,(d1, d2) -> { return d2.compareTo(d1);});
 		Comparator<Project> comparator = Comparator.comparing(Project::getDeadline,(d1, d2) -> { return d2.compareTo(d1);});
 
 		output.setProjects(parsedContent.getProjects().stream()
 			.sorted(comparator)
 			.peek(p -> {
-				List<String> cs = new ArrayList<>();
+				List<Contributor> cs = new ArrayList<>();
 
 				for (Skill rs : p.getRequiredSkills()) {
-					Optional<Contributor> c = findContributor(rs, p, cs);
+					Optional<Contributor> c = findContributor(rs, p,
+							cs.stream().map(Contributor::getName).collect(Collectors.toList()));
 
-
-					c.ifPresent(cont -> {
-						Skill s = getSkill(cont, rs);
-
-						if (s.getLevel() == rs.getLevel())
-							s.setLevel(s.getLevel() + 1);
-
-						cs.add(cont.getName());
-					});
+					c.ifPresent(cs::add);
 				}
 
-				p.setAssignedContributors(new ArrayList<>(cs));
+				p.setAssignedContributors(cs);
 			})
 			.filter(p -> p.getRequiredSkills().size() == p.getAssignedContributors().size())
+			.peek(p -> {
+				p.getAssignedContributors().forEach(c -> {
+					for (Skill rs : p.getRequiredSkills()) {
+						Optional<Skill> sk = getSkill(c, rs);
+
+						if (sk.isPresent() && sk.get().getLevel() == rs.getLevel())
+							sk.get().setLevel(sk.get().getLevel() + 1);
+					}
+				});
+			})
 			.collect(Collectors.toList()));
 	}
 
@@ -62,13 +66,13 @@ public class SimulationExecutor {
 				.findFirst();
 	}
 
-	private Skill getSkill(Contributor c, Skill k) {
+	private Optional<Skill> getSkill(Contributor c, Skill k) {
 		return c.getSkills().stream()
-				.filter(kk -> kk.getName().equals(k.getName())).findFirst().get();
+				.filter(kk -> kk.getName().equals(k.getName())).findFirst();
 	}
 
 	private int getSkillLevel(Contributor c, Skill k) {
-		return getSkill(c, k).getLevel();
+		return getSkill(c, k).get().getLevel();
 	}
 
 	private boolean hasSkillContributor(Contributor c, Skill k) {

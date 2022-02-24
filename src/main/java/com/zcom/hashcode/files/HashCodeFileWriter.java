@@ -2,6 +2,9 @@ package com.zcom.hashcode.files;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.stream.Collectors;
+
+import com.zcom.hashcode.domain.Contributor;
 import com.zcom.hashcode.domain.OutputContent;
 import com.zcom.hashcode.domain.Project;
 
@@ -16,7 +19,7 @@ public class HashCodeFileWriter {
 			for (Project p : output.getProjects()) {
 				fw.write(String.valueOf(p.getName()));
 				fw.write("\n");
-				fw.write(String.join(" ", p.getAssignedContributors()));
+				fw.write(p.getAssignedContributors().stream().map(Contributor::getName).collect(Collectors.joining(" ")));
 				fw.write("\n");
 			}
 			

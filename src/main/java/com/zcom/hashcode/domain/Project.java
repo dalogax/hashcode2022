@@ -13,5 +13,9 @@ public class Project {
     private int nRoles;
     private List<Skill> requiredSkills;
 
-    private List<String> assignedContributors;
+    private List<Contributor> assignedContributors;
+
+    public double getEffortRatio() {
+        return this.score / this.effort;
+    }
 }
