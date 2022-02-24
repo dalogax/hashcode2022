@@ -2,16 +2,16 @@ package com.zcom.hashcode.service;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import javax.sound.sampled.SourceDataLine;
 
 
-import com.zcom.hashcode.domain.Contributor;
-import com.zcom.hashcode.domain.OutputContent;
-import com.zcom.hashcode.domain.ParsedContent;
-import com.zcom.hashcode.domain.Project;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.zcom.hashcode.domain.*;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,31 +30,30 @@ public class SimulationExecutor {
 	}
 
 	public void resolve() {
-
 		Comparator<Project> comparator = Comparator.comparing(Project::getDeadline,(d1, d2) -> { return d2.compareTo(d1);});
-
-
+		Multimap<String, Contributor> skillIndex = indexSkills(parsedContent);
 
 		output.setProjects(parsedContent.getProjects().stream()
 			.sorted(comparator)
-			.map(p -> {
-				p.setAssignedContributors(parsedContent.getContributors()
-					.stream()
-					.limit(p.getNRoles())
-					.map( c -> c.getName())
-					.collect(Collectors.toList()));
-				return p;
-				})
+			.peek(p -> p.setAssignedContributors(parsedContent.getContributors()
+				.stream()
+				.limit(p.getNRoles())
+				.map(Contributor::getName)
+				.collect(Collectors.toList())))
 			.collect(Collectors.toList()));
-
 	}
 
 
 	private Multimap<String,Contributor> indexSkills(ParsedContent content){
-		Multimap<String,Contributor> index = new ArrayListMultimap<String,Contributor>.create();
+		Multimap<String, Contributor> index = ArrayListMultimap.create();
 
+		for(Contributor c : content.getContributors()) {
+			for (Skill s : c.getSkills()) {
+				index.put(s.getName(), c);
+			}
+		}
 
-
+		return index;
 	}
 
 }
